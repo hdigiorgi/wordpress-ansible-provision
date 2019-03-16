@@ -1,0 +1,5 @@
+files/facade/ioncube_*
+files/facade/whmcs_*
+*.retry
+.hosts.ini
+.vscode

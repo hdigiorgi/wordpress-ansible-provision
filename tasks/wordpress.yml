@@ -1,0 +1,99 @@
+- name: install wp-cli
+  block:
+    - name: check if wp-cli already exists
+      stat: path=/usr/bin/wp
+      register: wp_cli_stat
+    - name: download and install wp cli
+      when: wp_cli_stat.stat.exists == False
+      block:
+        - name: download wp cli
+          get_url:
+            url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            dest: /usr/bin/wp
+            mode: 0755
+
+- name: downlad wordpress
+  block:
+    - name: ensure /var/www permissions
+      file: path=/var/www state=directory owner=www-data group=www-data mode=u=rwX,g=rX,o=rX recurse=yes
+    - name: check if wordpress is installed
+      stat: path=/var/www/default/wp-load.php
+      register: wordpress_code_stat
+    - name: get wordpress code
+      when: wordpress_code_stat.stat.exists == False
+      block: 
+        - name: wp core download
+          command: wp --path=/var/www/default core download --version=5.1.1
+          become: yes
+          become_user: www-data
+        - name: remove default .htaccess
+          file: path=/var/www/default/.htaccess state=absent
+        - name: remove default wp-config.php
+          file: path=/var/www/default/wp-config.php state=absent
+
+- name: copy default wordpress configuration files
+  block:
+    - name: check if .htaccess alread exists
+      stat: path=/var/www/default/.htaccess
+      register: htaccess_stat
+    - name: copy .htaccess
+      when: htaccess_stat.stat.exists == False
+      copy:
+        src: ../files/wordpress/.htaccess
+        dest: /var/www/default/.htaccess
+        owner: www-data
+        mode: u=rwX,g=rX,o=rX
+    
+    - name: check if wp-config.php already exists
+      stat: path=/var/www/default/wp-config.php
+      register: wpconfig_stat
+    - name: copy wp-config
+      when: wpconfig_stat.stat.exists == False
+      block:
+        - name: copy wp-config.php template
+          copy:
+            src: ../files/wordpress/wp-config.php
+            dest: /var/www/default/wp-config.php
+            owner: www-data
+            mode: u=rwX,g=rX,o=rX
+        - name: replace secrets in it
+          include: replace_generated_password.yml file="/var/www/default/wp-config.php" replace="{{ item }}"
+          with_items:
+            - "DB_NAME"
+            - "DB_USER"
+            - "DB_PASSWORD"
+            - "WP_AUTH_KEY"
+            - "WP_SECURE_AUTH_KEY"
+            - "WP_LOGGED_IN_KEY"
+            - "WP_NONCE_KEY"
+            - "WP_AUTH_SALT"
+            - "WP_SECURE_AUTH_SALT"
+            - "WP_LOGGED_IN_SALT"
+            - "WP_NONCE_SALT"
+
+- name: install plugins
+  block: 
+    - name: remove akismet
+      file:
+        path: /var/www/default/wp-content/plugins/akismet
+        state: absent
+    - name: download packages
+      include: wordpress_install_plugin.yml name="{{ item.name }}" url="{{ item.url }}" ppath="/var/www/default/wp-content/plugins/"
+      with_items:
+        - {name: 'redirection', url: 'https://downloads.wordpress.org/plugin/redirection.3.7.3.zip'}
+        - {name: 'all-in-one-wp-security-and-firewall', url: 'https://downloads.wordpress.org/plugin/all-in-one-wp-security-and-firewall.zip'}
+        - {name: 'wordpress-seo', url: 'https://downloads.wordpress.org/plugin/wordpress-seo.10.0.zip'}
+        - {name: 'w3-total-cache', url: 'https://downloads.wordpress.org/plugin/w3-total-cache.0.9.7.2.zip'}
+        - {name: 'wp-sweep', url: 'https://downloads.wordpress.org/plugin/wp-sweep.1.1.0.zip'}
+        - {name: 'a3-lazy-load', url: 'https://downloads.wordpress.org/plugin/a3-lazy-load.1.9.2.zip'}
+        - {name: 'google-analytics-for-wordpress', url: 'https://downloads.wordpress.org/plugin/google-analytics-for-wordpress.7.4.2.zip'}
+        - {name: 'all-in-one-wp-migration', url: 'https://downloads.wordpress.org/plugin/all-in-one-wp-migration.6.86.zip'}
+    - name: set permissions for plugins
+      block:
+        - name: all-in-one-wp-migration
+          file:
+            path: /var/www/default/wp-content/plugins/all-in-one-wp-migration/storage
+            state: directory
+            owner: www-data
+            mode: 0777
+

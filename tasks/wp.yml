@@ -1,0 +1,8 @@
+---
+- name: wp
+  hosts: wp
+  tasks:
+    - import_tasks: security.yml
+    - import_tasks: lamp.yml
+    - import_tasks: wordpress.yml
+    

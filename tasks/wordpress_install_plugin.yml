@@ -1,0 +1,24 @@
+- name: install plugin {{name}}
+  block:
+    - name: "check if the plugin {{ name }} is already installed"
+      stat:
+        path: "{{ ppath }}/{{ name }}"
+      register: plugin_installed
+    - name: "install plugin {{ name }}"
+      when: plugin_installed.stat.exists == False
+      become: yes
+      become_user: www-data
+      block:
+        - name: "downloading {{ name }}"
+          get_url: 
+            url: "{{ url }}"
+            dest: "/tmp/{{ name }}.zip"
+        - name: "uncompress {{ name }}.zip"
+          unarchive: 
+            src: "/tmp/{{ name }}.zip"
+            remote_src: yes
+            dest: "{{ ppath }}"
+        - name: "delete /tmp/{{ name }}.zip"
+          file:
+            path: "/tmp/{{ name }}.zip"
+            state: absent

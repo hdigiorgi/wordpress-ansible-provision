@@ -1,0 +1,70 @@
+- name: update & upgrade
+  block:
+    - name: update & install aptitude
+      apt:
+        name: "aptitude"
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+    - name: upgrade
+      apt:
+        name: "*"
+        state: latest
+        autoclean: yes
+        autoremove: yes
+
+- name: generate passwords and users
+  block:
+    - name: install pwgen
+      apt:
+        name: pwgen
+        state: present
+    - name: password generation
+      include: generate_password.yml file="{{ item.file }}" length="{{ item.length }}"
+      with_items:
+        - {file: 'WP_AUTH_KEY',         length: 64}
+        - {file: 'WP_SECURE_AUTH_KEY',  length: 64}
+        - {file: 'WP_LOGGED_IN_KEY',    length: 64}
+        - {file: 'WP_NONCE_KEY',        length: 64}
+        - {file: 'WP_AUTH_SALT',        length: 64}
+        - {file: 'WP_SECURE_AUTH_SALT', length: 64}
+        - {file: 'WP_LOGGED_IN_SALT',   length: 42}
+        - {file: 'WP_NONCE_SALT',       length: 42}
+        - {file: 'WP_AUTH_KEY',         length: 42}
+        - {file: 'DB_NAME',             length: 6}
+        - {file: 'DB_USER',             length: 6}
+        - {file: 'DB_PASSWORD',         length: 32}
+
+- name: install fail2ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Disallow password authentication
+  block:
+    - name: disable PasswordAuthentication
+      lineinfile: dest=/etc/ssh/sshd_config
+                  regexp="^PasswordAuthentication"
+                  line="PasswordAuthentication no"
+                  state=present
+    - name: disable ChallengeResponseAuthentication
+      lineinfile: dest=/etc/ssh/sshd_config
+                  regexp="^ChallengeResponseAuthentication"
+                  line="ChallengeResponseAuthentication no"
+                  state=present
+    - name: restart ssh
+      service: name=ssh state=restarted
+
+- name: set random password for root and FORGET IT
+  user: name=root password="{{ lookup('password', '/dev/null length=128 chars=ascii_letters') }}"
+
+- name: set firewall rules
+  block:
+    - name: Allow SSH in UFW
+      ufw: rule=allow port=22 proto=tcp
+    - name: Allow http in UFW
+      ufw: rule=allow port=80 proto=tcp
+    - name: Allow https in UFW
+      ufw: rule=allow port=443 proto=tcp
+    - name: Set firewall default policy
+      ufw: state=enabled direction=incoming policy=reject

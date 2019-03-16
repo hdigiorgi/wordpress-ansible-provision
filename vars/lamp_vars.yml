@@ -1,0 +1,5 @@
+---
+apache_create_vhosts: true
+apache_vhosts_filename: "vhosts.conf"
+apache_vhosts_template: "vhosts.conf.j2"
+apache_remove_default_vhost: false
