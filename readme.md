@@ -10,6 +10,9 @@ The features of this repo are:
 * All typically required `php` modules are installed.
 * The database is set up in the same server: `mysql` 8.
 * Strong and aggressive cache and minification is done via [PageSpeed](https://developers.google.com/speed/) and pre-installed plugins.
+* SEO optimization:
+    * Nice urls pre configured.
+    * SEO plugins pre installed.
 * HTTPS ready with [Let’s Encrypt certificates](https://letsencrypt.org/).
 * Security in mind.
     * Firewall.
@@ -18,25 +21,18 @@ The features of this repo are:
 
 The code here is written using [Ansible](https://www.ansible.com/) and [Python 3](https://www.python.org/). And the assumptions are the following:
 
-* You are running in linux machine (ansible doens't work under windows).
+* You are running in linux machine (Ansible doesn't work under windows).
 * You have **root** access to a **ubuntu** server.
 * The server has at least 1GB of ram. It wont last a long time running with 512MB or less.
 
 ## Usage - quick guide
 
-To install wordpress just to which you already can connect via `ssh` as `root`:
+To install WordPress just to which you already can connect via `ssh` as `root`:
 
 ```
 $ ./install [your-server-ip]
 ```
-
-(TODO) With the A dns records pointing to your server, you can enable https:
-
-```
-$ ./install [your-server-ip] https [domain-name]
-```
-
-(TODO) Inside your instance logged as `root`, retrieve the user and password to login into your new WordPress installation:
+Inside your instance logged as `root`, retrieve the user and password to login into your new WordPress installation:
 
 ```
 $ cat /root/passwords/ADMIN_USER

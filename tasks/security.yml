@@ -36,7 +36,7 @@
         - {file: 'DB_PASSWORD',         length: 32}
         - {file: 'DB_PASSWORD',         length: 32}
         - {file: 'ADMIN_USER',          length: 6}
-        - {file: 'ADMIN_NICE_USER',     length: 6}
+        - {file: 'ADMIN_USER_DISPLAY',  length: 6}
         - {file: 'ADMIN_PASSWORD',      length: 18}
 
 - name: install fail2ban

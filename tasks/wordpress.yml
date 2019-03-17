@@ -97,3 +97,39 @@
             owner: www-data
             mode: 0777
 
+- name: install wp
+  block:
+    - name: check if wp is already installed
+      shell: wp core is-installed
+      register: is_wp_installed
+      failed_when: is_wp_installed.rc not in [0,1]
+    - name: start wordpress installation
+      when: is_wp_installed.rc != 0
+      block:
+        - name: running WordPress installation
+          shell: sudo -u www-data wp --path='/var/www/default/' \
+                 core install --url=localhost --title='Blog Title' --skip-email \
+                 --admin_user=$(cat /root/passwords/ADMIN_USER) \
+                 --admin_password=$(cat /root/passwords/ADMIN_PASSWORD)
+                 --admin_email='no-email@no-email.no-ext'
+        - name: rename user diplay name to not match the logging name
+          shell: sudo -u www-data wp --path='/var/www/default/' \
+                 user update 1 \ 
+                 --display_name=$(cat /root/passwords/ADMIN_USER_DISPLAY) \
+                 --user_email=$(cat /root/passwords/ADMIN_USER_DISPLAY) \
+                 --user_nicename=$(cat /root/passwords/ADMIN_USER_DISPLAY) \
+                 --nickname=$(cat /root/passwords/ADMIN_USER_DISPLAY) \
+                 --first_name=$(cat /root/passwords/ADMIN_USER_DISPLAY) \
+                 --last_name=$(cat /root/passwords/ADMIN_USER_DISPLAY) \
+        - name: enable all plugins
+          become_user: www-data 
+          shell: wp --path='/var/www/default/' \
+                 plugin activate --all
+        - name: set default theme
+          become_user: www-data 
+          shell: wp --path='/var/www/default/' \
+                 theme activate twentyseventeen
+        - name: set nice urls
+          become_user: www-data 
+          shell: wp --path='/var/www/default/' \
+                 rewrite structure /%postname%/

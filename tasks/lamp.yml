@@ -121,6 +121,8 @@
        copy: src=../files/lamp/sites-enabled/000-default.conf dest=/etc/apache2/sites-enabled/000-default.conf
      - name: copy apache ports configuration
        copy: src=../files/lamp/ports.conf dest=/etc/apache2/ports.conf
+     - name: copy custom apache2.conf 
+       copy: src=../files/lamp/apache2.conf dest=/etc/apache2/apache2.conf 
      - name: copy apache configuration
        copy: src=../files/lamp/mods-available/pagespeed.conf dest=/etc/apache2/mods-available/pagespeed.conf
      - name: copy custom php.ini
@@ -128,9 +130,15 @@
 
 - name: enable mods
   block:
-    - apache2_module: name=deflate state=present
-    - apache2_module: name=filter state=present
-    - apache2_module: name=rewrite state=present
-    - apache2_module: name=ssl state=present
+    - name: enable deflate apache module
+      shell: a2enmod deflate
+    - name: enable filter apache module
+      shell: a2enmod filter
+    - name: enable rewrite apache module
+      shell: a2enmod rewrite
+    - name: enable ssl apache module
+      shell: a2enmod ssl
+    - name: enable substitute apache module
+      shell: a2enmod substitute
     - name: Restart service httpd
       service: name=apache2 state=restarted 
