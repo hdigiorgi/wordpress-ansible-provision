@@ -32,6 +32,13 @@ To install WordPress just to which you already can connect via `ssh` as `root`:
 ```
 $ ./install [your-server-ip]
 ```
+
+With your A records pointing to your server you can add https with:
+
+```
+$ ./install [server-ip] https [domain] [your-email]
+```
+
 Inside your instance logged as `root`, retrieve the user and password to login into your new WordPress installation:
 
 ```
