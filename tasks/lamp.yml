@@ -104,5 +104,5 @@
       shell: a2enmod ssl
     - name: enable substitute apache module
       shell: a2enmod substitute
-    - name: Restart service httpd
+    - name: Restart service apache
       service: name=apache2 state=restarted 
