@@ -77,3 +77,47 @@ If you had problems connecting:
 * `Permission denied (publickey)`: Add your keys first with `ssh-add`.
 * `Permissions ... for '...' are too open`: `chmod` the private key to `0400`.
 * Troubleshooting guides: [A](https://www.linode.com/docs/troubleshooting/troubleshooting-ssh/), [B](https://www.linux.com/blog/4-reasons-why-ssh-connection-fails%20), [C](https://tecadmin.net/how-to-enable-ssh-as-root-on-aws-ubuntu-instance/).
+
+### 2 - Install requirements
+
+You needs to have installed python3 and ansible:
+
+* [Official Ansible Installation guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
+* [Running Ansible on Windows](https://dzone.com/articles/running-ansible-on-a-windows-system): If you are stuck with it.
+* [Python 3 installation guide by RealPython.com](https://realpython.com/installing-python/).
+
+### 3 - Install Wordpress
+
+You need to call the `install` script passing your server ip as argument:
+
+```shell
+./install [server-ip]
+```
+
+This script will call the ansible scripts inside `tasks`. You should take a look at the code to see what is going on.
+
+After the previous command run successfully you will get a working WordPress installation. The user and password are stored inside the `/root/passwords` folder:
+
+* `/root/passwords/ADMIN_USER`
+* `/root/passwords/ADMIN_PASSWORD`
+
+You need those credentials to log into your new installation.
+
+### 4 - Add https
+
+With a domain registered, you need to add a A DNS record pointing to your domain. If you don't know how to do it, [this is a good tutorial](https://code.tutsplus.com/tutorials/an-introduction-to-learning-and-using-dns-records--cms-24704).
+
+After you can access your website using your domain you can write:
+
+```shell
+$ ./install [server-ip] https [domain] [your-email]
+```
+
+That will setup your https certification. The email is required because if there is any problem with the certificates you will be notified.
+
+
+### 5 - Next steps
+
+Because you will managing your own server, you should be taking a look to:
+
+* [WP CLI](https://wp-cli.org/): The WordPress Command Line Interface.
