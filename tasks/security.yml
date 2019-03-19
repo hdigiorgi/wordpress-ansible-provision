@@ -13,6 +13,14 @@
         autoclean: yes
         autoremove: yes
 
+- name: add daily reboots
+  cron:
+    name: daily-reboot-cron
+    hour: 5
+    minute: 0
+    job: /sbin/shutdown -r +5
+
+
 - name: generate passwords and users
   block:
     - name: install pwgen

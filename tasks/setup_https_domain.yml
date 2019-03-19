@@ -1,0 +1,33 @@
+- name: certificate for https://{{domain}} 
+  block:
+    - name: check if the certificate for {{domain}} is already issued
+      stat:
+        path: /etc/letsencrypt/live/{{domain}}
+      register: certificate
+    - name: ask certificate for https://{{domain}} and send notifications to {{email}}
+      when: file_details.stat.exists == False
+      shell: certbot-auto -n --agree-tos \
+            -m {{email}} certonly \
+            --webroot -w /var/www/default \
+            -d {{domain}}
+
+- name: setup apache configuration
+  block:
+    - name: ensure domain configuration file exists
+      file:
+        path: /etc/apache2/sites-enabled/001-domains.conf
+        state: touch
+    - name: "add apache configuration for https://{{domain}}"
+      blockinfile:
+        path: /etc/apache2/sites-enabled/001-domains.conf
+        block: |
+          <VirtualHost _default_:443>
+              ServerName {{domain}}
+              DocumentRoot /var/www/default
+              SSLEngine on
+              SSLCertificateFile      /etc/letsencrypt/live/{{domain}}/cert.pem
+              SSLCertificateKeyFile   /etc/letsencrypt/live/{{domain}}/privkey.pem
+              SSLCertificateChainFile /etc/letsencrypt/live/{{domain}}/chain.pem
+          </VirtualHost>
+    - name: Restart apache service
+      service: name=apache2 state=restarted 

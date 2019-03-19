@@ -1,5 +1,5 @@
 - name: setup https
   hosts: wp
   tasks:
-    - import_tasks: letsencrypt.yml
+    - import_tasks: setup_https_domain.yml
   become: yes  

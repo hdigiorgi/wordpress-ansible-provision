@@ -121,3 +121,4 @@ That will setup your https certification. The email is required because if there
 Because you will managing your own server, you should be taking a look to:
 
 * [WP CLI](https://wp-cli.org/): The WordPress Command Line Interface.
+* [SSH Port Forwarding](https://www.ssh.com/ssh/tunneling/example): Because our instance have firewall, the only way you can access the database directly will be forwarding ports.
