@@ -15,3 +15,10 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . /index.php [L]
 </IfModule>
+
+# https
+<IfModule mod_rewrite.c>
+    RewriteEngine On 
+    RewriteCond %{HTTPS}  !=on 
+    RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L] 
+</IfModule>
