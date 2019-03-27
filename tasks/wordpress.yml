@@ -80,6 +80,7 @@
     - name: download packages
       include: wordpress_install_plugin.yml name="{{ item.name }}" url="{{ item.url }}" ppath="/var/www/default/wp-content/plugins/"
       with_items:
+        - {name: 'https-redirection', url:'https://downloads.wordpress.org/plugin/https-redirection.zip'}
         - {name: 'redirection', url: 'https://downloads.wordpress.org/plugin/redirection.4.1.zip'}
         - {name: 'all-in-one-wp-security-and-firewall', url: 'https://downloads.wordpress.org/plugin/all-in-one-wp-security-and-firewall.zip'}
         - {name: 'wordpress-seo', url: 'https://downloads.wordpress.org/plugin/wordpress-seo.10.0.1.zip'}
