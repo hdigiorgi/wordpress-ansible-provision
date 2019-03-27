@@ -5,8 +5,6 @@ define('DB_USER',                '__REPLACE_WITH_DB_USER__');
 define('DB_PASSWORD',            '__REPLACE_WITH_DB_PASSWORD__');
 define('DB_HOST',                'localhost');
 define('IMAGE_EDIT_OVERWRITE',   true);
-define('WP_HTTP_BLOCK_EXTERNAL', true);
-define('WP_ACCESSIBLE_HOSTS',    '*.wordpress.org,*.github.com,localhost' );
 define('WP_DEBUG',               false);
 define('DISALLOW_FILE_EDIT',     true);
 
