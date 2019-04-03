@@ -1,11 +1,11 @@
-- name: certificate for https://{{domain}} 
+- name: "certificate for https://{{domain}}"
   block:
     - name: check if the certificate for {{domain}} is already issued
       stat:
         path: /etc/letsencrypt/live/{{domain}}
       register: certificate
-    - name: ask certificate for https://{{domain}} and send notifications to {{email}}
-      when: file_details.stat.exists == False
+    - name: "ask certificate for https://{{domain}} and send notifications to {{email}}"
+      when: certificate.stat.exists == False
       shell: certbot-auto -n --agree-tos \
             -m {{email}} certonly \
             --webroot -w /var/www/default \

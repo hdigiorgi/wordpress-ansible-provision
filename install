@@ -10,9 +10,13 @@ def is_install_command():
 def is_https_command():
     return len(sys.argv) == 5 and sys.argv[2] == "https"
 
+def is_name_command():
+    return len(sys.argv) == 5 and sys.argv[2] == "name"
+
 def inform_bad_command():
     print("./install [ip] -> install wordpress")
     print("./install [ip] https [domain] [your-email] -> sets up https for [domain]")
+    print("./install [ip] name [name] [your-email] -> sets the user and email to display")
 
 def get_ip():
     return sys.argv[1]
@@ -54,17 +58,30 @@ def run_ansible_https_setup():
     return run_ansible(["tasks/https_setup.yml", "--extra-vars", 
                         f"domain={domain} email={email}"])
 
+def run_ansible_set_user():
+    user = get_domain()
+    email = get_email()
+    return run_ansible(["tasks/wordpress_set_user.yml", "--extra-vars", 
+                        f"user={user} email={email}"])
+
+
+
 def install():
     run_ansible_wp_install()
 
 def https():
     run_ansible_https_setup()
 
+def name():
+    run_ansible_set_user()
+
 def main():
     if is_install_command():
         return install()
     elif is_https_command():
         return https()
+    elif is_name_command():
+        return name()
     else:
         return inform_bad_command()
 

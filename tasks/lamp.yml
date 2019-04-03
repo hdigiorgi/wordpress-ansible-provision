@@ -133,6 +133,8 @@
        copy: src=../files/lamp/mods-available/pagespeed.conf dest=/etc/apache2/mods-available/pagespeed.conf
      - name: copy custom php.ini
        copy: src=../files/lamp/php.ini dest=/etc/php/7.2/apache2/php.ini
+     - name: copy apache2 log rotation config
+       copy: src=../files/lamp/logrotate.d/apache2 dest=/etc/logrotate.d/apache2
 
 - name: enable mods
   block:
@@ -147,4 +149,6 @@
     - name: enable substitute apache module
       shell: a2enmod substitute
     - name: Restart service apache
-      service: name=apache2 state=restarted 
+      service: name=apache2 state=restarted
+    - name: Rotate apache2 logs
+      shell: logrotate -vf /etc/logrotate.d/apache2
